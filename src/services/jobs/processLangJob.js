@@ -1,4 +1,3 @@
-import LanguageDetect from 'languagedetect';
 import cld from 'cld-sync';
 
 import Repo from '../../models/Repo';
