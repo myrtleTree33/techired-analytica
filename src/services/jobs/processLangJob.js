@@ -6,8 +6,6 @@ import logger from '../../logger';
 
 const PER_PAGE = 10000;
 
-const langDetector = new LanguageDetect();
-
 const queryRepos = async ({ page = 1 }) => {
   const pagination = {
     limit: PER_PAGE,
