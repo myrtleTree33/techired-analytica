@@ -1,4 +1,5 @@
 import cld from 'cld-sync';
+import moment from 'moment';
 
 import Repo from '../../models/Repo';
 import logger from '../../logger';
@@ -35,10 +36,6 @@ const processSingleRepo = async repo => {
   const isReliable = result.reliable;
   const { name, code, percent } = result.languages[0];
 
-  //   if (code !== 'en') {
-  //     console.log(`${name}/${percent} -- ${description} -- ${isReliable}`);
-  //   }
-
   // Skip if prediction unreliable
   if (!isReliable) {
     Promise.resolve();
@@ -58,9 +55,13 @@ const processLangJob = () => {
   (async () => {
     try {
       let page = 1;
+      const start = moment();
 
       while (true) {
-        console.log(`mining page ${page}`);
+        const hoursPassed = moment().diff(start, 'hours');
+        logger.info(
+          `Processing repo native lang, page ${page} - ${hoursPassed} hours have passed.`
+        );
         const repos = await queryRepos({ page });
 
         // Return if no repos left
@@ -74,6 +75,8 @@ const processLangJob = () => {
         // Increment page
         page++;
       }
+
+      logger.info('Done processing repo languages.');
     } catch (e) {
       logger.error(e.message);
     }

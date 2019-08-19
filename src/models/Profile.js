@@ -22,6 +22,9 @@ const profileSchema = new Schema({
   profilePic: {
     type: String
   },
+  userLangs: {
+    type: [String]
+  },
   company: {
     type: String
   },
