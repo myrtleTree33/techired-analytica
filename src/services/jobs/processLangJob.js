@@ -6,7 +6,7 @@ import logger from '../../logger';
 
 const PER_PAGE = 10000;
 
-const queryNumReposToUpdate = async () => Repo.countDocuments({ nativeLang: { $exists: false } });
+const queryNumReposToUpdate = async () => Repo.count({});
 
 const queryRepos = async ({ page = 1 }) => {
   const pagination = {
@@ -14,7 +14,7 @@ const queryRepos = async ({ page = 1 }) => {
     skip: PER_PAGE * (page - 1)
   };
 
-  return Repo.find({ nativeLang: { $exists: false } })
+  return Repo.find({})
     .limit(pagination.limit)
     .skip(pagination.skip)
     .exec();
@@ -59,9 +59,11 @@ const processLangJob = () => {
       let page = 1;
       const start = moment();
 
-      logger.info(`Retrieving num repos to update..`);
       const numRepos = await queryNumReposToUpdate();
-      logger.info(`Processing repo native lang, numReposToUpdate=${numRepos}`);
+      logger.info(
+        `Processing repo native lang, numReposToUpdate=${numRepos} i.e. numPages=${numRepos /
+          PER_PAGE}`
+      );
 
       while (true) {
         const hoursPassed = moment().diff(start, 'hours');
