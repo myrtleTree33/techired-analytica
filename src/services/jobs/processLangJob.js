@@ -60,6 +60,7 @@ const processLangJob = () => {
       const start = moment();
 
       const numRepos = await queryNumReposToUpdate();
+      logger.info(`Retrieving num repos to update..`);
       logger.info(`Processing repo native lang, numReposToUpdate=${numRepos}`);
 
       while (true) {
