@@ -51,6 +51,13 @@ const processUserLangsJob = () => {
     try {
       let page = 1;
 
+      const numUsers = await Profile.count({});
+
+      logger.info(
+        `Processing user native languages, numUsers=${numUsers} i.e. numPages=${numUsers /
+          PER_PAGE}`
+      );
+
       while (true) {
         const hoursPassed = moment().diff(start, 'hours');
         logger.info(
