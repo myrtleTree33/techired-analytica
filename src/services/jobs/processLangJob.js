@@ -6,7 +6,7 @@ import logger from '../../logger';
 
 const PER_PAGE = 10000;
 
-const queryNumReposToUpdate = async () => Repo.find({ nativeLang: { $exists: false } }).count();
+const queryNumReposToUpdate = async () => Repo.countDocuments({ nativeLang: { $exists: false } });
 
 const queryRepos = async ({ page = 1 }) => {
   const pagination = {
@@ -59,8 +59,8 @@ const processLangJob = () => {
       let page = 1;
       const start = moment();
 
-      const numRepos = await queryNumReposToUpdate();
       logger.info(`Retrieving num repos to update..`);
+      const numRepos = await queryNumReposToUpdate();
       logger.info(`Processing repo native lang, numReposToUpdate=${numRepos}`);
 
       while (true) {
