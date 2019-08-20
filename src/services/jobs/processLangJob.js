@@ -6,6 +6,8 @@ import logger from '../../logger';
 
 const PER_PAGE = 10000;
 
+const queryNumReposToUpdate = async () => Repo.find({ nativeLang: { $exists: false } }).count();
+
 const queryRepos = async ({ page = 1 }) => {
   const pagination = {
     limit: PER_PAGE,
@@ -56,6 +58,9 @@ const processLangJob = () => {
     try {
       let page = 1;
       const start = moment();
+
+      const numRepos = await queryNumReposToUpdate();
+      logger.info(`Processing repo native lang, numReposToUpdate=${numRepos}`);
 
       while (true) {
         const hoursPassed = moment().diff(start, 'hours');
