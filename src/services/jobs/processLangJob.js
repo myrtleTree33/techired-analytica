@@ -13,7 +13,7 @@ const queryRepos = async ({ prevLastDate }) =>
     ? Repo.find({})
         .limit(PER_PAGE)
         .sort({ _id: 1 })
-    : Repo.find({ createdAt: { $gt: prevLastDate } })
+    : Repo.find({ lastScrapedAt: { $gt: prevLastDate } })
         .limit(PER_PAGE)
         .sort({ _id: 1 });
 
@@ -76,7 +76,7 @@ const processLangJob = () => {
         await processRepos(repos);
 
         // Increment counters
-        prevLastDate = repos[repos.length - 1].createdAt;
+        prevLastDate = repos[repos.length - 1].lastScrapedAt;
         currPage++;
       }
 
