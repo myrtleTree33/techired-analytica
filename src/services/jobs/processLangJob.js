@@ -4,7 +4,7 @@ import moment from 'moment';
 import Repo from '../../models/Repo';
 import logger from '../../logger';
 
-const PER_PAGE = 100000;
+const PER_PAGE = 10000;
 
 const queryNumReposToUpdate = async () => Repo.count({});
 
