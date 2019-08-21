@@ -8,17 +8,14 @@ const PER_PAGE = 10000;
 
 const queryNumReposToUpdate = async () => Repo.count({});
 
-const queryRepos = async ({ page = 1 }) => {
-  const pagination = {
-    limit: PER_PAGE,
-    skip: PER_PAGE * (page - 1)
-  };
-
-  return Repo.find({})
-    .limit(pagination.limit)
-    .skip(pagination.skip)
-    .exec();
-};
+const queryRepos = async ({ prevLastDate }) =>
+  !prevLastDate
+    ? Repo.find({})
+        .limit(PER_PAGE)
+        .sort({ _id: 1 })
+    : Repo.find({ createdAt: { $gt: prevLastDate } })
+        .limit(PER_PAGE)
+        .sort({ _id: 1 });
 
 const processSingleRepo = async repo => {
   const { _id, description } = repo;
@@ -56,21 +53,19 @@ const processRepos = async repos => {
 const processLangJob = () => {
   (async () => {
     try {
-      let page = 1;
+      let prevLastDate = null;
+      let currPage = 0;
       const start = moment();
 
       const numRepos = await queryNumReposToUpdate();
-      logger.info(
-        `Processing repo native lang, numReposToUpdate=${numRepos} i.e. numPages=${numRepos /
-          PER_PAGE}`
-      );
+      logger.info(`Processing repo native lang, totalNumPages=${numRepos / PER_PAGE}`);
 
       while (true) {
         const hoursPassed = moment().diff(start, 'hours');
         logger.info(
-          `Processing repo native lang, page ${page} - ${hoursPassed} hours have passed.`
+          `Processing repo native lang, currPage=${currPage} hoursPassed=${hoursPassed} prevLastDate=${prevLastDate}`
         );
-        const repos = await queryRepos({ page });
+        const repos = await queryRepos({ prevLastDate });
 
         // Return if no repos left
         if (repos.length === 0) {
@@ -80,8 +75,9 @@ const processLangJob = () => {
         // Process all repos
         await processRepos(repos);
 
-        // Increment page
-        page++;
+        // Increment counters
+        prevLastDate = repos[repos.length - 1].createdAt;
+        currPage++;
       }
 
       logger.info('Done processing repo languages.');

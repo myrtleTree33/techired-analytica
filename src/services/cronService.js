@@ -7,7 +7,7 @@ const initCron = () => {
   logger.info('Scheduling cron jobs..');
   //   cron.schedule('1 */9 * * *', processLangJob);
   processLangJob();
-  processUserLangsJob();
+  // processUserLangsJob();
 };
 
 export default initCron;
